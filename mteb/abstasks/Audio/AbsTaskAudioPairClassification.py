@@ -53,7 +53,7 @@ class AudioPairClassificationDescriptiveStatistics(DescriptiveStatistics):
     labels: dict[str, dict[str, int]]
 
 
-class AbsTaskPairClassification(AbsTask):
+class AbsTaskAudioPairClassification(AbsTask):
     """Abstract class for AudioPairClassificationTasks
     The similarity is computed between pairs and the results are ranked. Average precision
     is computed to measure how well the methods can be used for pairwise pair classification.
