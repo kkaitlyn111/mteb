@@ -15,44 +15,6 @@ from .TaskMetadata import DescriptiveStatistics
 logger = logging.getLogger(__name__)
 
 
-class AudioPairClassificationDescriptiveStatistics(DescriptiveStatistics):
-    """Descriptive statistics for AudioPairClassification
-
-    Attributes:
-        num_samples: Number of audio samples
-        total_duration: Total audio duration in seconds
-
-        min_duration1: Minimum audio clip duration
-        avg_duration1: Average audio clip duration
-        max_duration1: Maximum audio clip duration
-        sample_rate1: Audio sample rate
-
-        min_duration2: Minimum audio clip duration
-        avg_duration2: Average audio clip duration
-        max_duration2: Maximum audio clip duration
-        sample_rate2: Audio sample rate
-
-        unique_labels: Number of unique labels
-        labels: dict of label frequencies
-    """
-
-    num_samples: int
-    total_duration: float
-
-    min_duration1: float
-    avg_duration1: float
-    max_duration1: float
-    sample_rate1: int
-
-    min_duration2: float
-    avg_duration2: float
-    max_duration2: float
-    sample_rate2: int
-
-    unique_labels: int
-    labels: dict[str, dict[str, int]]
-
-
 class AbsTaskPairClassification(AbsTask):
     """Abstract class for AudioPairClassificationTasks
     The similarity is computed between pairs and the results are ranked. Average precision
@@ -64,8 +26,6 @@ class AbsTaskPairClassification(AbsTask):
         label: int
     """
 
-    abstask_prompt = "Retrieve audio that are semantically similar to the given audio."
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -74,7 +34,7 @@ class AbsTaskPairClassification(AbsTask):
 
     def _evaluate_subset(
         self,
-        model: Encoder,
+        model: AudioEncoder,
         dataset: Dataset,
         *,
         encode_kwargs: dict[str, str] = {},
@@ -99,20 +59,7 @@ class AbsTaskPairClassification(AbsTask):
     def _calculate_metrics_from_split(
         self, split: str, hf_subset: str | None = None, compute_overall: bool = False
     ) -> None:
-        if hf_subset:
-            dataset = self.dataset[hf_subset][split]
-            if isinstance(dataset, list):
-                dataset = dataset[0]
-        elif compute_overall:
-            dataset = defaultdict(list)
-            for hf_subset in self.metadata.eval_langs:
-                cur_dataset = self.dataset[hf_subset][split]
-                if isinstance(cur_dataset, list):
-                    cur_dataset = cur_dataset[0]
-                for key, value in cur_dataset.items():
-                    dataset[key].extend(value[0] if len(value) == 1 else value)
-        else:
-            dataset = self.dataset[split]
+        pass
     
     def get_candidate_labels(self) -> list[str]:
         """Return the text candidates for classification"""
